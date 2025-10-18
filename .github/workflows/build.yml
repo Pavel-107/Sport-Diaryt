@@ -1,5 +1,6 @@
 name: Build Flutter Web & Android
-on: { workflow_dispatch: {} }
+on:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,17 +14,11 @@ jobs:
         with:
           channel: stable
 
-      - name: Enable Linux deps
+      - name: Install deps
         run: sudo apt-get update -y && sudo apt-get install -y libgtk-3-dev liblzma-dev zip unzip
-
-      - name: Flutter doctor
-        run: flutter doctor -v
 
       - name: Pub get
         run: flutter pub get
-
-      - name: Analyze
-        run: flutter analyze || true
 
       - name: Build Web
         env: { CI: false }
@@ -31,14 +26,11 @@ jobs:
           flutter config --enable-web
           flutter build web --release --target=lib/main.dart
 
-      - name: Zip Web
-        run: cd build/web && zip -r ../../web_build.zip . && cd ../..
-
       - name: Upload Web artifact
         uses: actions/upload-artifact@v4
         with:
           name: web_build
-          path: web_build.zip
+          path: build/web
 
       - name: Build APK
         env: { CI: false }
@@ -49,11 +41,14 @@ jobs:
         with:
           name: app_release
           path: build/app/outputs/flutter-apk/app-release.apk
-          - name: Deploy to Netlify
+
+      # ⬇️ Автодеплой на Netlify
+      - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v2.0
         with:
           publish-dir: ./build/web
           production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
