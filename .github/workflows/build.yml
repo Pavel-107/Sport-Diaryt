@@ -1,10 +1,12 @@
-name: Build Flutter Web & Android
+name: Build & Deploy Flutter Web
+
 on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-web:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -14,14 +16,15 @@ jobs:
         with:
           channel: stable
 
-      - name: Install deps
+      - name: Install system deps
         run: sudo apt-get update -y && sudo apt-get install -y libgtk-3-dev liblzma-dev zip unzip
 
       - name: Pub get
         run: flutter pub get
 
       - name: Build Web
-        env: { CI: false }
+        env:
+          CI: false
         run: |
           flutter config --enable-web
           flutter build web --release --target=lib/main.dart
@@ -32,17 +35,7 @@ jobs:
           name: web_build
           path: build/web
 
-      - name: Build APK
-        env: { CI: false }
-        run: flutter build apk --release
-
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app_release
-          path: build/app/outputs/flutter-apk/app-release.apk
-
-      # ⬇️ Автодеплой на Netlify
+      # ⬇️ Автодеплой на Netlify (APK не собираем)
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v2.0
         with:
