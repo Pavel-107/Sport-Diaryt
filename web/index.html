@@ -2,11 +2,17 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sport Diary</title>
     <link rel="manifest" href="manifest.json">
   </head>
   <body>
-    <script src="flutter.js" defer></script>
+    <script>
+      var serviceWorkerVersion = null;
+      var scriptTag = document.createElement('script');
+      scriptTag.src = 'flutter.js';
+      scriptTag.defer = true;
+      document.body.append(scriptTag);
+    </script>
   </body>
 </html>
