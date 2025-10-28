@@ -1,47 +1,41 @@
-name: Build & Deploy Flutter Web
+name: Build Flutter Web
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-  build-web:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Setup Flutter
+      - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: '3.24.0' # или твоя версия
 
-      - name: Install system deps
-        run: sudo apt-get update -y && sudo apt-get install -y libgtk-3-dev liblzma-dev zip unzip
+      - name: Enable Flutter Web
+        run: flutter config --enable-web
 
-      - name: Pub get
+      - name: Install dependencies
         run: flutter pub get
 
-      - name: Build Web
-        env:
-          CI: false
+      - name: Build Flutter Web
+        run: flutter build web --release
+
+      - name: Prepare dist folder
         run: |
-          flutter config --enable-web
-          flutter build web --release --target=lib/main.dart
+          rm -rf dist
+          mkdir dist
+          cp -R build/web/* dist/
 
-      - name: Upload Web artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
         with:
-          name: web_build
-          path: build/web
-
-      # ⬇️ Автодеплой на Netlify (APK не собираем)
-      - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v2.0
-        with:
-          publish-dir: ./build/web
-          production-deploy: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          name: flutter-web-build
+          path: dist/
