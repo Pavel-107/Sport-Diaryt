@@ -3,13 +3,12 @@
 const CACHE_NAME = 'sportdiary-static-v1';
 
 const STATIC_ASSETS = [
-  '/favicon.svg',
-  '/manifest.json',
-  '/icons/Icon-192.svg',
-  '/icons/Icon-512.svg',
-  '/flutter.js'
+  'favicon.svg',
+  'manifest.json',
+  'icons/Icon-192.svg',
+  'icons/Icon-512.svg',
+  'flutter.js'
 ];
-
 // Установка SW и кэширование статических файлов
 self.addEventListener('install', event => {
   event.waitUntil(
