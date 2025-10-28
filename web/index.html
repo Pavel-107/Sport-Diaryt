@@ -9,6 +9,15 @@
     <title>Sport Diary</title>
     <link rel="manifest" href="manifest.json">
   </head>
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('✅ SW registered'))
+        .catch(err => console.warn('SW register failed:', err));
+    });
+  }
+</script>
   <body>
     <script>
       // Загружаем bootstrap-файл Flutter
