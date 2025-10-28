@@ -1,52 +1,83 @@
-// === web/sw.js ===
-// Лёгкий service worker для Sport Diary (только статика)
-const CACHE_NAME = 'sportdiary-static-v1';
-
-const STATIC_ASSETS = [
-  'favicon.svg',
-  'manifest.json',
-  'icons/Icon-192.svg',
-  'icons/Icon-512.svg',
-  'flutter.js'
+/* SportDiary SW — аккуратное кэширование + мгновенные обновления */
+const CACHE = 'sd-v1';
+const PRECACHE_URLS = [
+  '/', '/index.html', '/manifest.json', '/flutter.js',
+  '/favicon.svg'
 ];
-// Установка SW и кэширование статических файлов
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
-  );
-  self.skipWaiting();
+
+// Файлы c «вечным» кэшем (версии меняются в путях при билде)
+const IMMUTABLE_RE = /\.(?:png|jpg|jpeg|gif|webp|svg|ico|css|wasm|ttf|otf|eot|woff2?)$/i;
+const DART_MAIN_RE = /\/main\.dart\.js$/; // всегда стараться брать свежий
+
+self.addEventListener('install', (e) => {
+  e.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    await cache.addAll(PRECACHE_URLS);
+    await self.skipWaiting();
+  })());
 });
 
-// Активация SW и очистка старого кэша
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.map(k => (k !== CACHE_NAME ? caches.delete(k) : null)))
-    )
-  );
-  self.clients.claim();
+self.addEventListener('activate', (e) => {
+  e.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
+    await self.clients.claim();
+  })());
 });
 
-// Обработка запросов
-self.addEventListener('fetch', event => {
-  const req = event.request;
-  const url = new URL(req.url);
+self.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
 
-  // Не кэшируем HTML — чтобы обновления прилетали сразу
-  if (req.headers.get('accept')?.includes('text/html')) return;
+self.addEventListener('fetch', (e) => {
+  const { request } = e;
+  if (request.method !== 'GET') return;
 
-  // Для статических файлов — cache-first стратегия
-  const isStatic = STATIC_ASSETS.includes(url.pathname);
-  if (isStatic) {
-    event.respondWith(
-      caches.match(req).then(cached =>
-        cached ||
-        fetch(req).then(res => {
-          const resClone = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put(req, resClone));
-          return res;
-        })
-      )
-    );
+  const url = new URL(request.url);
+
+  // Навигация: network-first -> index.html (SPA)
+  if (request.mode === 'navigate') {
+    e.respondWith((async () => {
+      try {
+        const fresh = await fetch(request, { cache: 'no-store' });
+        return fresh;
+      } catch {
+        const cache = await caches.open(CACHE);
+        return (await cache.match('/index.html')) || Response.error();
+      }
+    })());
+    return;
   }
+
+  // main.dart.js — network-first (чтобы всегда получать новый билд)
+  if (DART_MAIN_RE.test(url.pathname)) {
+    e.respondWith((async () => {
+      try {
+        const fresh = await fetch(request, { cache: 'no-store' });
+        const cache = await caches.open(CACHE);
+        cache.put(request, fresh.clone());
+        return fresh;
+      } catch {
+        const cache = await caches.open(CACHE);
+        return (await cache.match(request)) || Response.error();
+      }
+    })());
+    return;
+  }
+
+  // Статика (иконки/шрифты/wasm) — stale-while-revalidate
+  if (IMMUTABLE_RE.test(url.pathname) || url.pathname.startsWith('/assets/') || url.pathname.startsWith('/canvaskit/')) {
+    e.respondWith((async () => {
+      const cache = await caches.open(CACHE);
+      const cached = await cache.match(request);
+      const fetchPromise = fetch(request).then(resp => {
+        if (resp && resp.status === 200) cache.put(request, resp.clone());
+        return resp;
+      }).catch(() => null);
+      return cached || (await fetchPromise) || Response.error();
+    })());
+    return;
+  }
+
+  // Остальное — по сети как есть
 });
