@@ -1,32 +1,25 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-    <meta name="description" content="Sport Diary Flutter App">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <base href="/" />
 
-    <title>Sport Diary</title>
-    <link rel="manifest" href="manifest.json">
-  </head>
-  <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(() => console.log('✅ SW registered'))
-        .catch(err => console.warn('SW register failed:', err));
-    });
-  }
-</script>
-  <body>
-    <script>
-      // Загружаем bootstrap-файл Flutter
-      window.addEventListener('load', function(ev) {
-        var scriptTag = document.createElement('script');
-        scriptTag.src = 'flutter_bootstrap.js';
-        scriptTag.defer = true;
-        document.body.appendChild(scriptTag);
-      });
-    </script>
-  </body>
+  <title>Sport Diary</title>
+  <meta name="description" content="Sport Diary — ваш тренировочный дневник" />
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Инструкции для кэширования HTML: всегда проверять обновления -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+</head>
+<body>
+  <!-- Загрузчик Flutter + регистрация SW -->
+  <script defer src="/flutter.js"></script>
+  <!-- Flutter сам подгрузит /main.dart.js через bootstrap -->
+  <noscript>Для работы приложения нужен JavaScript.</noscript>
+</body>
 </html>
