@@ -1,63 +1,47 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#0A2E5D" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Sport Diary — спортивный дневник для триатлета, анализа тренировок, интеграции со Strava." />
+    <title>Sport Diary</title>
 
-  <!-- PWA + App Icons -->
-  <link rel="manifest" href="manifest.json">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
 
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <!-- Icons -->
+    <link rel="icon" type="image/png" href="icons/favicon.png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
 
-  <meta name="theme-color" content="#0A2E5D">
-  <meta name="background-color" content="#0A2E5D">
-  <meta name="application-name" content="Sport Diary">
-  <meta name="apple-mobile-web-app-title" content="Sport Diary">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Prevent caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
 
-  <meta name="description" content="Sport Diary — спортивный дневник для триатлета. Аналитика, тренировки, интеграция со Strava.">
-  <title>Sport Diary</title>
-  <!-- End PWA + App Icons -->
+    <base href="/" />
+  </head>
 
-  <!-- Flutter Web App -->
-  <base href="/">
-  <script>
-    // Flutter web service worker versioning
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('flutter_service_worker.js?v=1.0.1');
+  <body>
+    <noscript>Пожалуйста, включите JavaScript для запуска приложения Sport Diary.</noscript>
+
+    <!-- Подключение Flutter bootstrap -->
+    <script src="flutter.js" defer></script>
+
+    <!-- Инициализация Flutter Web -->
+    <script>
+      window.addEventListener('load', async function () {
+        _flutter.loader.loadEntrypoint({
+          serviceWorker: { serviceWorkerVersion: null },
+          onEntrypointLoaded: async function (engineInitializer) {
+            const appRunner = await engineInitializer.initializeEngine();
+            await appRunner.runApp();
+          },
+        });
       });
-    }
-  </script>
-
-  <!-- Prevent caching of index.html -->
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-</head>
-
-<body>
-  <noscript>Пожалуйста, включите JavaScript для запуска приложения Sport Diary.</noscript>
-
-  <!-- Flutter bootstrap script -->
-  <script src="flutter.js" defer></script>
-  <script>
-    window.addEventListener('load', async function () {
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: '1.0.1',
-        },
-        onEntrypointLoaded: async function (engineInitializer) {
-          let appRunner = await engineInitializer.initializeEngine();
-          await appRunner.runApp();
-        }
-      });
-    });
-  <script src="flutter.js" defer></script>
-</body>
+    </script>
+  </body>
 </html>
