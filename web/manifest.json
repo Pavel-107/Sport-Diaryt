@@ -2,7 +2,7 @@
   "name": "Sport Diary",
   "short_name": "Sport Diary",
   "description": "Спортивный дневник для триатлета. Аналитика, тренировки и интеграция со Strava.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
@@ -11,31 +11,31 @@
   "theme_color": "#0A2E5D",
   "icons": [
     {
-      "src": "favicon.png",
+      "src": "icons/favicon.png",
       "sizes": "32x32",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "apple-touch-icon.png",
+      "src": "icons/apple-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-192.png",
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-512.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-512-maskable.png",
+      "src": "icons/icon-512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
