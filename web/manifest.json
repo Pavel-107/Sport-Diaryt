@@ -2,12 +2,13 @@
   "name": "Sport Diary",
   "short_name": "Sport Diary",
   "description": "Спортивный дневник для триатлета. Аналитика, тренировки и интеграция со Strava.",
+  "version": "1.0.1",
   "start_url": ".",
+  "scope": ".",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0A2E5D",
   "theme_color": "#0A2E5D",
-  "scope": ".",
   "icons": [
     {
       "src": "favicon.png",
