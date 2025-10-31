@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# Remove old Flutter SDK if exists
+if [ -d "flutter" ]; then
+  rm -rf flutter
+fi
+
 # Install Flutter SDK
 git clone https://github.com/flutter/flutter.git -b stable
 
